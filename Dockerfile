@@ -1,10 +1,10 @@
 FROM buildpack-deps:stretch
 
-LABEL maintainer="Thiago Lima <contact@thiagoemmanuel.com>"
+LABEL maintainer="Bernhard Hayden <hello@nini.su>"
 
 # Versions of Nginx and nginx-rtmp-module to use
-ENV NGINX_VERSION nginx-1.18.0
-ENV NGINX_RTMP_MODULE_VERSION 1.2.1
+ENV NGINX_VERSION nginx-1.21.1
+ENV NGINX_RTMP_MODULE_VERSION 1.2.2
 
 # Install dependencies Stunnel4
 RUN apt-get update && \
@@ -50,34 +50,16 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Set up config file
-COPY nginx/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Config Stunnel
 RUN mkdir -p  /etc/stunnel/conf.d
-# Set up config file 
+# Set up config file
 COPY stunnel/stunnel.conf /etc/stunnel/stunnel.conf
 COPY stunnel/stunnel4 /etc/default/stunnel4
 
-#Facebook Stunnel Port 19350
-COPY stunnel/fb.conf /etc/stunnel/conf.d/fb.conf
-
-#Instagram Stunnel Port 19351
-COPY stunnel/instagram.conf /etc/stunnel/conf.d/instagram.conf
-
-#Youtube
-ENV YOUTUBE_URL rtmp://a.rtmp.youtube.com/live2/
-ENV YOUTUBE_KEY ""
-
-#Facebook
-ENV FACEBOOK_URL rtmp://127.0.0.1:19350/rtmp/
-ENV FACEBOOK_KEY ""
-
-#Instagram
-ENV INSTAGRAM_URL rtmp://127.0.0.1:19351/rtmp/
-ENV INSTAGRAM_KEY ""
-
-ENV DEBUG ""
+COPY stunnel/facebook.conf /etc/stunnel/conf.d/facebook.conf
+COPY stunnel/youtube.conf /etc/stunnel/conf.d/youtube.conf
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
